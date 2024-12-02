@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from 'react';
-import { fetchFromOMDB } from '../utils/omdb';
+import { fetchFromOMDB } from '../../utils/omdb';
+import Card from '../components/Card';
 
-export default function Home() {
+export default function Search() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
 
   const searchMovies = async () => {
+    if (!query) return;
     const data = await fetchFromOMDB<{ Search: any[] }>(`s=${query}`);
     setResults(data.Search || []);
   };
@@ -21,18 +23,15 @@ export default function Home() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <button onClick={searchMovies} className="ml-2 p-2 bg-blue-500 text-white rounded">Ara</button>
+      <button
+        onClick={searchMovies}
+        className="ml-2 p-2 bg-blue-500 text-white rounded"
+      >
+        Ara
+      </button>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
         {results.map((movie) => (
-          <div key={movie.imdbID} className="bg-gray-700 text-white p-4 rounded shadow">
-            <img
-              src={movie.Poster}
-              alt={movie.Title}
-              className="rounded"
-            />
-            <h2 className="text-lg font-bold mt-2">{movie.Title}</h2>
-            <p className="text-sm">{movie.Year}</p>
-          </div>
+          <Card key={movie.imdbID} movie={movie} />
         ))}
       </div>
     </div>
