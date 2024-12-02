@@ -17,7 +17,7 @@ export default function Home() {
       <input
         type="text"
         placeholder="Film ara..."
-        className="p-2 border border-gray-400 rounded"
+        className="p-2 border border-gray-400 rounded text-black bg-white" 
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
