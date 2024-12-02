@@ -3,15 +3,14 @@ import { fetchFromOMDB } from '../../../utils/omdb';
 import { Movie } from '../../../types/omdb';
 
 interface MoviePageProps {
-  params: { id: string };
+  params: { id: string };  // URL parametresi olarak film ID'si
 }
 
 const MoviePage = async ({ params }: MoviePageProps) => {
-  // API'den veri çekme
-  const movieData = await fetchFromOMDB(params.id);
+  const movieData = await fetchFromOMDB(params.id);  // OMDB API'den veri çekme
 
-  if (!movieData) {
-    return <div>Movie not found</div>;  // Hata durumu
+  if (!movieData || movieData.Response === 'False') {
+    return <div>Movie not found</div>;  // Film bulunamadıysa mesaj
   }
 
   return (
