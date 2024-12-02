@@ -1,30 +1,27 @@
 // app/movie/[id]/page.tsx
 import { fetchFromOMDB } from '../../../utils/omdb';
+import { Movie } from '../../../types/omdb';
 
 interface MoviePageProps {
-  params: {
-    id: string;
-  };
-  movieData: any;
+  params: { id: string };
 }
 
-const MoviePage = ({ params, movieData }: MoviePageProps) => {
+const MoviePage = async ({ params }: MoviePageProps) => {
+  // API'den veri çekme
+  const movieData = await fetchFromOMDB(params.id);
+
+  if (!movieData) {
+    return <div>Movie not found</div>;  // Hata durumu
+  }
+
   return (
     <div>
-      <h1>{movieData?.Title}</h1>
-      <p>{movieData?.Plot}</p>
-      <img src={movieData?.Poster} alt={movieData?.Title} />
+      <h1>{movieData.Title}</h1>
+      <img src={movieData.Poster} alt={movieData.Title} />
+      <p>{movieData.Plot}</p>
+      <p>{movieData.Year}</p>
     </div>
   );
-};
-
-export const getServerSideProps = async ({ params }: { params: { id: string } }) => {
-  const data = await fetchFromOMDB(params.id);
-  return {
-    props: {
-      movieData: data,
-    },
-  };
 };
 
 export default MoviePage;
