@@ -1,13 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { fetchFromOMDB } from "../utils/omdb";
 
 export default function Home() {
-  const [query, setQuery] = useState(""); // Kullanıcının arama sorgusu
-  const [results, setResults] = useState<any[]>([]); // Film listesi
+  const [popularMovies, setPopularMovies] = useState<any[]>([]); // Popüler filmler listesi
 
-  // Birden fazla popüler film setini çekmek için varsayılan yükleme
+  // Birden fazla popüler film setini yükle
   useEffect(() => {
     const fetchPopularMovies = async () => {
       const movieQueries = ["batman", "marvel", "harry potter", "star wars"]; // Farklı film serileri
@@ -17,47 +17,49 @@ export default function Home() {
         for (const searchQuery of movieQueries) {
           const data = await fetchFromOMDB<{ Search: any[] }>(`s=${searchQuery}`);
           if (data.Search) {
-            allMovies.push(...data.Search); // Her sorgudan gelen filmleri listeye ekle
+            allMovies.push(...data.Search);
           }
         }
-        setResults(allMovies); // Sonuçları güncelle
+        setPopularMovies(allMovies); // Popüler filmleri kaydet
       } catch (error) {
         console.error("Error fetching popular movies:", error);
       }
     };
 
     fetchPopularMovies();
-  }, []); // Bileşen yüklendiğinde çalışır
-
-  // Arama yapıldığında çağrılan fonksiyon
-  const searchMovies = async () => {
-    const data = await fetchFromOMDB<{ Search: any[] }>(`s=${query}`);
-    setResults(data.Search || []);
-  };
+  }, []);
 
   return (
     <div className="p-4">
-      {/* Arama girişi */}
-      <input
-        type="text"
-        placeholder="Film ara..."
-        className="p-2 border border-gray-400 rounded text-black bg-white"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <button onClick={searchMovies} className="ml-2 p-2 bg-blue-500 text-white rounded">
-        Ara
-      </button>
+      {/* Navbar */}
+      <nav className="flex justify-between items-center bg-gray-800 p-4 text-white">
+        <h1 className="text-2xl font-bold">Film Takip Uygulaması</h1>
+        <div className="space-x-4">
+          <Link href="/login">
+            <button className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded transition">
+              Giriş Yap
+            </button>
+          </Link>
+          <Link href="/register">
+            <button className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition">
+              Kayıt Ol
+            </button>
+          </Link>
+        </div>
+      </nav>
 
-      {/* Film listesi */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-        {results.map((movie) => (
-          <div key={movie.imdbID} className="bg-gray-700 text-white p-4 rounded shadow">
-            <img src={movie.Poster} alt={movie.Title} className="rounded" />
-            <h2 className="text-lg font-bold mt-2">{movie.Title}</h2>
-            <p className="text-sm">{movie.Year}</p>
-          </div>
-        ))}
+      {/* Popüler Filmler */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Popüler Filmler</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {popularMovies.map((movie) => (
+            <div key={movie.imdbID} className="bg-gray-700 text-white p-4 rounded shadow">
+              <img src={movie.Poster} alt={movie.Title} className="rounded" />
+              <h2 className="text-lg font-bold mt-2">{movie.Title}</h2>
+              <p className="text-sm">{movie.Year}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
