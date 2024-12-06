@@ -26,6 +26,18 @@ export default function Register() {
           Kayıt Ol
         </button>
       </form>
+      {/* Alt Kısım: Giriş Yap Linki */}
+      <div className="mt-4 text-center">
+        <p className="text-sm">
+          Zaten bir hesabınız var mı?{" "}
+          <a
+            href="/auth/login"
+            className="text-green-500 underline hover:text-green-700"
+          >
+            Giriş Yap
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

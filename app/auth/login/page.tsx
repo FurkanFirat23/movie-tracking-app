@@ -20,6 +20,20 @@ export default function Login() {
           Giriş Yap
         </button>
       </form>
+      {/* Links */}
+      <div className="mt-4 text-center">
+        <p className="text-sm">
+          Üye değil misiniz?{" "}
+          <a href="/auth/register" className="text-blue-500 underline hover:text-blue-700">
+            Kayıt Ol
+          </a>
+        </p>
+        <p className="text-sm mt-2">
+          <a href="/auth/forgot-password" className="text-blue-500 underline hover:text-blue-700">
+            Şifremi Unuttum
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
