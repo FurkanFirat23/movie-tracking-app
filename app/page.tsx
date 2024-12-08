@@ -31,22 +31,8 @@ export default function Home() {
 
   return (
     <div className="p-4">
-      {/* Navbar */}
-      <nav className="flex justify-between items-center bg-gray-800 p-4 text-white">
-        <h1 className="text-2xl font-bold">Film Takip Uygulaması</h1>
-        <div className="space-x-4">
-          <Link href="/auth/login">
-            <button className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded transition">
-              Giriş Yap
-            </button>
-          </Link>
-          <Link href="/auth/register">
-            <button className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition">
-              Kayıt Ol
-            </button>
-          </Link>
-        </div>
-      </nav>
+    
+     
 
       {/* Popüler Filmler */}
       <div className="mt-8">
