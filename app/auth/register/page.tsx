@@ -1,43 +1,81 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 export default function Register() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState<boolean | null>(null); // Başarılı olup olmadığını belirler
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null); // Mesajı sıfırla
+    setIsSuccess(null); // Başarı durumunu sıfırla
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage("Başarıyla kayıt olundu.");
+        setIsSuccess(true); // Başarı durumu
+        setTimeout(() => {
+          router.push("/auth/login"); // Giriş yap ekranına yönlendir
+        }, 2000); // 2 saniye sonra yönlendir
+      } else {
+        setMessage(data.error || "Bir hata oluştu.");
+        setIsSuccess(false); // Hata durumu
+      }
+    } catch (error) {
+      setMessage("Bir hata oluştu. Lütfen tekrar deneyin.");
+      setIsSuccess(false); // Hata durumu
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-6">Kayıt Ol</h1>
-      <form className="w-full max-w-sm">
-        {/* Kullanıcı Adı Input */}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-4 text-center">Kayıt Ol</h2>
+        {message && (
+          <p className={`text-center mb-4 ${isSuccess ? "text-green-500" : "text-red-500"}`}>
+            {message}
+          </p>
+        )}
         <input
           type="text"
           placeholder="Kullanıcı Adı"
-          className="p-2 border border-gray-300 rounded w-full mb-4 text-black bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full p-2 mb-4 border rounded text-black"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
-        {/* Email Input */}
         <input
           type="email"
           placeholder="Email"
-          className="p-2 border border-gray-300 rounded w-full mb-4 text-black bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full p-2 mb-4 border rounded text-black"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        {/* Şifre Input */}
         <input
           type="password"
           placeholder="Şifre"
-          className="p-2 border border-gray-300 rounded w-full mb-4 text-black bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full p-2 mb-4 border rounded text-black"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        {/* Kayıt Ol Butonu */}
-        <button className="bg-green-500 text-white p-2 w-full rounded hover:bg-green-600 focus:outline-none">
+        <button type="submit" className="w-full bg-green-500 text-white p-2 rounded">
           Kayıt Ol
         </button>
       </form>
-      {/* Alt Kısım: Giriş Yap Linki */}
-      <div className="mt-4 text-center">
-        <p className="text-sm">
-          Zaten bir hesabınız var mı?{" "}
-          <a
-            href="/auth/login"
-            className="text-green-500 underline hover:text-green-700"
-          >
-            Giriş Yap
-          </a>
-        </p>
-      </div>
     </div>
   );
 }
