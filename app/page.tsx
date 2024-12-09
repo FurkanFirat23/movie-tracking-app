@@ -31,22 +31,22 @@ export default function Home() {
 
   return (
     <div className="p-4">
-    
-     
-
-      {/* Popüler Filmler */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Popüler Filmler</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {popularMovies.map((movie) => (
-            <div key={movie.imdbID} className="bg-gray-700 text-white p-4 rounded shadow">
-              <img src={movie.Poster} alt={movie.Title} className="rounded" />
-              <h2 className="text-lg font-bold mt-2">{movie.Title}</h2>
-              <p className="text-sm">{movie.Year}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+    {/* Popüler Filmler Başlığı */}
+    <div className="mt-8 flex justify-center">
+      <h2 className="text-xl font-bold mb-4">Popüler Filmler</h2>
     </div>
+  
+    {/* Popüler Filmler Listesi */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {popularMovies.map((movie) => (
+        <div key={movie.imdbID} className="bg-gray-700 text-white p-4 rounded shadow">
+          <img src={movie.Poster} alt={movie.Title} className="rounded" />
+          <h2 className="text-lg font-bold mt-2">{movie.Title}</h2>
+          <p className="text-sm">{movie.Year}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+  
   );
 }
