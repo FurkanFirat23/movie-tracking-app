@@ -2,28 +2,35 @@
 
 import { useRouter } from "next/navigation";
 
-const LogoutButton = () => {
+const LogoutButton: React.FC = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    const response = await fetch("/api/logout", {
-      method: "POST",
-    });
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
 
-    if (response.ok) {
-      // Kullanıcıyı giriş sayfasına yönlendir
-      router.push("/login");
-    } else {
-      console.error("Logout failed");
+      if (response.ok) {
+        // Yerel oturumu temizle
+        localStorage.removeItem("token");
+        alert("Başarıyla çıkış yapıldı.");
+        router.push("/"); // Ana sayfaya yönlendirme
+      } else {
+        const errorData = await response.json();
+        console.error("Logout failed:", errorData);
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
   return (
     <button
       onClick={handleLogout}
-      className="p-2 bg-red-500 text-white rounded"
+      className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
     >
-      Logout
+      Çıkış Yap
     </button>
   );
 };

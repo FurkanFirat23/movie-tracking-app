@@ -1,39 +1,69 @@
-export default function Login() {
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage(data.message); // Giriş başarılı mesajı
+        localStorage.setItem("token", data.token); // JWT token'ı sakla
+        setTimeout(() => {
+          router.push("/"); // Ana sayfaya yönlendir
+        }, 2000); // 2 saniye bekleme
+      } else {
+        setMessage(data.message); // Hata mesajını göster
+      }
+    } catch (error) {
+      setMessage("Bir hata oluştu. Lütfen tekrar deneyin.");
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-6">Giriş Yap</h1>
-      <form className="w-full max-w-sm">
-        {/* Email Input */}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-4 text-center">Giriş Yap</h2>
+        {message && (
+          <p className={`text-center mb-4 ${response.ok ? "text-green-500" : "text-red-500"}`}>
+            {message}
+          </p>
+        )}
         <input
           type="email"
           placeholder="Email"
-          className="p-2 border border-gray-300 rounded w-full mb-4 text-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 mb-4 border rounded text-black"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        {/* Password Input */}
         <input
           type="password"
           placeholder="Şifre"
-          className="p-2 border border-gray-300 rounded w-full mb-4 text-black bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 mb-4 border rounded text-black"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        {/* Login Button */}
-        <button className="bg-blue-500 text-white p-2 w-full rounded hover:bg-blue-600 focus:outline-none">
+        <button type="submit" className="w-full bg-green-500 text-white p-2 rounded">
           Giriş Yap
         </button>
       </form>
-      {/* Links */}
-      <div className="mt-4 text-center">
-        <p className="text-sm">
-          Üye değil misiniz?{" "}
-          <a href="/auth/register" className="text-blue-500 underline hover:text-blue-700">
-            Kayıt Ol
-          </a>
-        </p>
-        <p className="text-sm mt-2">
-          <a href="/auth/forgot-password" className="text-blue-500 underline hover:text-blue-700">
-            Şifremi Unuttum
-          </a>
-        </p>
-      </div>
     </div>
   );
-}
+};
+
+export default Login;

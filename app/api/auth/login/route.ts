@@ -1,30 +1,43 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import User from '../../../../models/User';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import { NextResponse } from "next/server";
+import User from "../../../../models/User";
+import connectDB from "../../../../utils/connectDB";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-const login = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { email, password } = req.body;
+export async function POST(req: Request) {
+  await connectDB();
+  
   try {
+    const { email, password } = await req.json();
+
+    // Kullanıcıyı bul
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: 'Kullanıcı bulunamadı' });
+      return NextResponse.json({ error: "Kullanıcı bulunamadı." }, { status: 404 });
     }
 
+    // Şifreyi kontrol et
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Geçersiz şifre' });
+      return NextResponse.json({ error: "Hatalı şifre." }, { status: 400 });
     }
 
-    // JWT token oluşturuluyor
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
-      expiresIn: '1h',
-    });
+    // JWT Token oluştur
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "1h" } // Token süresi
+    );
 
-    return res.status(200).json({ token }); // Token istemciye döndürülüyor
+    return NextResponse.json(
+      {
+        message: "Giriş başarılı.",
+        token,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return res.status(500).json({ message: 'Sunucu hatası' });
+    console.error("Login error:", error);
+    return NextResponse.json({ error: "Sunucu hatası. Lütfen tekrar deneyin." }, { status: 500 });
   }
-};
-
-export default login;
+}
