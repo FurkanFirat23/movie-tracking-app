@@ -22,15 +22,48 @@ const Profile = () => {
         },
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        setUser(data);
-        setProfilePicture(data.profilePicture || ""); // Varsayılan profil resmi
-      } else {
-        setMessage(data.error);
+      if (!response.ok) {
+        const errorData = await response.json();
+        setMessage(errorData.error || "Profil alınamadı.");
+        return;
       }
-    } catch (error) {
+
+      const data = await response.json();
+      setUser(data);
+      setProfilePicture(data.profilePicture || "");
+    } catch {
       setMessage("Bir hata oluştu. Profil alınamadı.");
+    }
+  };
+
+  const updateProfilePicture = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage("Oturum açmanız gerekiyor.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ profilePicture }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setMessage(errorData.error || "Profil güncellenemedi.");
+        return;
+      }
+
+      const data = await response.json();
+      setUser(data);
+      setMessage("Profil resmi başarıyla güncellendi.");
+    } catch {
+      setMessage("Bir hata oluştu. Profil güncellenemedi.");
     }
   };
 
@@ -64,7 +97,7 @@ const Profile = () => {
           />
         </div>
         <button
-          onClick={() => {}}
+          onClick={updateProfilePicture}
           className="w-full mt-4 bg-green-500 text-white p-2 rounded"
         >
           Profil Resmini Güncelle
