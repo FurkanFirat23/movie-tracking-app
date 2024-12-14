@@ -1,54 +1,31 @@
 import { NextResponse } from "next/server";
-import User from "../../../../models/User";
-import connectDB from "../../../../utils/connectDB";
-import jwt from "jsonwebtoken";
 
-export async function GET(req: Request) {
-  await connectDB();
-  const token = req.headers.get("Authorization")?.split(" ")[1];
+let userProfile = {
+  username: "kullanici123",
+  email: "kullanici@example.com",
+  profilePicture: "https://via.placeholder.com/150",
+};
 
-  if (!token) {
-    return NextResponse.json({ error: "Token eksik." }, { status: 401 });
-  }
-
-  try {
-    const { id } = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
-    const user = await User.findById(id).select("-password");
-
-    if (!user) {
-      return NextResponse.json({ error: "Kullanıcı bulunamadı." }, { status: 404 });
-    }
-
-    return NextResponse.json(user, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
-  }
+// Profil GET: Mevcut profili getir
+export async function GET() {
+  return NextResponse.json(userProfile);
 }
 
-export async function PUT(req: Request) {
-  await connectDB();
-  const token = req.headers.get("Authorization")?.split(" ")[1];
-
-  if (!token) {
-    return NextResponse.json({ error: "Token eksik." }, { status: 401 });
-  }
-
+// Profil PUT: Profili güncelle
+export async function PUT(request: Request) {
   try {
-    const { id } = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
-    const { profilePicture } = await req.json();
+    const body = await request.json();
+    const { username, email, profilePicture } = body;
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      { profilePicture },
-      { new: true }
-    ).select("-password");
-
-    if (!user) {
-      return NextResponse.json({ error: "Kullanıcı bulunamadı." }, { status: 404 });
+    // Basit doğrulama
+    if (!username || !email) {
+      return NextResponse.json({ error: "Username ve email zorunludur" }, { status: 400 });
     }
 
-    return NextResponse.json(user, { status: 200 });
+    // Yeni değerlerle profili güncelle
+    userProfile = { ...userProfile, username, email, profilePicture };
+    return NextResponse.json({ message: "Profil başarıyla güncellendi", userProfile });
   } catch (error) {
-    return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
+    return NextResponse.json({ error: "Profil güncellenemedi" }, { status: 500 });
   }
 }
