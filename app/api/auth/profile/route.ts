@@ -1,31 +1,20 @@
 import { NextResponse } from "next/server";
+import dbConnect from "@/lib/mongodb";
+import User from "@/models/User";
 
-let userProfile = {
-  username: "kullanici123",
-  email: "kullanici@example.com",
-  profilePicture: "https://via.placeholder.com/150",
-};
-
-// Profil GET: Mevcut profili getir
 export async function GET() {
-  return NextResponse.json(userProfile);
-}
-
-// Profil PUT: Profili güncelle
-export async function PUT(request: Request) {
   try {
-    const body = await request.json();
-    const { username, email, profilePicture } = body;
+    await dbConnect();
 
-    // Basit doğrulama
-    if (!username || !email) {
-      return NextResponse.json({ error: "Username ve email zorunludur" }, { status: 400 });
+    // Varsayılan bir kullanıcıyı döndür (örnek amaçlı)
+    const user = await User.findOne({ email: "kullanici@example.com" });
+
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    // Yeni değerlerle profili güncelle
-    userProfile = { ...userProfile, username, email, profilePicture };
-    return NextResponse.json({ message: "Profil başarıyla güncellendi", userProfile });
+    return NextResponse.json(user);
   } catch (error) {
-    return NextResponse.json({ error: "Profil güncellenemedi" }, { status: 500 });
+    return NextResponse.json({ message: "Server Error" }, { status: 500 });
   }
 }

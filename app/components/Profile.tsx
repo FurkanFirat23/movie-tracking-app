@@ -1,9 +1,29 @@
+"use client";
+import { useEffect, useState } from "react";
+
+interface User {
+  username: string;
+  email: string;
+  profilePicture: string;
+}
+
 export default function Profile() {
-  const user = {
-    username: "kullanici123",
-    email: "kullanici@example.com",
-    profilePicture: "https://via.placeholder.com/150",
-  };
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/user/profile");
+        const data = await res.json();
+        setUser(data);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  if (!user) return <p>Loading...</p>;
 
   return (
     <div style={{ textAlign: "center" }}>
