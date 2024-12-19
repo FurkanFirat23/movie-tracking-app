@@ -17,20 +17,20 @@ export default function Profile() {
         const data = await res.json();
         setUser(data);
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error("Kullanıcı bilgileri alınamadı:", error);
       }
     };
     fetchUser();
   }, []);
 
-  if (!user) return <p>Loading...</p>;
+  if (!user) return <p>Yükleniyor...</p>;
 
   return (
     <div style={{ textAlign: "center" }}>
       <h2>Merhaba, {user.username}!</h2>
       <img
         src={user.profilePicture}
-        alt="Profile"
+        alt="Profil Fotoğrafı"
         width={150}
         height={150}
         style={{ borderRadius: "50%" }}
