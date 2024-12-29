@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import authMiddleware from '../../../../utils/authMiddleware';
-import User from '../../../../models/User';
+import authMiddleware from '../../../utils/authMiddleware';
+import User from '../../../models/User';
 
 const getUserLists = async (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.user.id; // Token'dan alınan userId
