@@ -1,40 +1,32 @@
-"use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
+"use client"; 
 
-const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+import { useUser } from "../context/UserContext";
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token); // Token varsa giriş yapılmış
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    window.location.href = "/"; // Ana sayfaya yönlendir
-  };
+export default function Navbar() {
+  const { user, setUser } = useUser();
 
   return (
-    <nav className="bg-gray-800 text-white p-4 flex justify-between items-center">
-      <Link href="/" className="text-xl font-bold">Film Takip</Link>
+    <nav className="flex justify-between p-4 bg-gray-800">
+      <span>Film Takip</span>
       <div>
-        {isLoggedIn ? (
+        {user ? (
           <>
-            <Link href="/profile" className="mr-4">Profil</Link>
-            <button onClick={handleLogout} className="bg-red-500 p-2 rounded">Çıkış Yap</button>
+            <button className="mr-4">Profil</button>
+            <button
+              className="text-red-500"
+              onClick={() => setUser(null)} 
+            >
+              Çıkış Yap
+            </button>
           </>
         ) : (
           <>
-            <Link href="/auth/login" className="mr-4">Giriş Yap</Link>
-            <Link href="/auth/register" className="bg-green-500 p-2 rounded">Kayıt Ol</Link>
+            <button className="mr-4">Giriş Yap</button>
+            <button>Üye Ol</button>
           </>
         )}
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
